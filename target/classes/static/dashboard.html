@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+            background-color: #eef3fb;
+        }
+
+        h1 {
+            color: #1f4fd8;
+        }
+
+        #client-info {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            width: 300px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 8px 14px;
+            background-color: #1f4fd8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        input {
+            padding: 6px;
+            margin-top: 5px;
+        }
+
+        .error {
+            color: #b00020;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+    </style>
+
+
+</head>
+<body>
+    <h1>Banking System Client Dashboard</h1>
+    
+    <div id="client-info">
+        <label>Name: <input type="text" id="clientName" value="John Doe" readonly></label><br>
+        <label>Account Number: <input type="text" id="accountNum" value="12345678" readonly></label><br>
+        <label>Balance: <span id="balanceDisplay">1000.00</span></label><br>
+        <label>Status: <span id="statusLabel">Verified</span></label>
+    </div>
+
+    <div id="notifications" class="error"></div>
+
+    <div id="actions">
+        <input type="number" id="amountInput" placeholder="Amount">
+        <button id="btnDeposit" onclick="performAction('DEPOSIT')">Deposit</button>
+        <button id="btnWithdraw" onclick="performAction('WITHDRAW')">Withdraw</button>
+        <button id="btnTransfer" onclick="performAction('TRANSFER')">Transfer</button>
+    </div>
+
+    <script>
+        let balance = 1000.00;
+        let status = "Verified"; 
+
+        function performAction(type) {
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const msgBox = document.getElementById('notifications');
+            msgBox.innerText = "";
+
+            if (status === "Suspended" && (type === "WITHDRAW" || type === "TRANSFER")) {
+                msgBox.innerText = "Action disabled: Account Suspended";
+                return;
+            }
+            if (status === "Closed") {
+                 msgBox.innerText = "Action disabled: Account Closed";
+                 return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                msgBox.innerText = "Invalid amount";
+                return;
+            }
+
+            if (type === "WITHDRAW" && amount > balance) {
+                msgBox.innerText = "Insufficient funds";
+                return;
+            }
+
+            // Simulate success
+            if (type === "DEPOSIT") balance += amount;
+            if (type === "WITHDRAW") balance -= amount;
+            
+            document.getElementById('balanceDisplay').innerText = balance.toFixed(2);
+            alert(type + " Successful");
+        }
+        
+        // Initial state check
+        if(status === "Suspended") {
+             // Logic to disable buttons visually if needed
+        }
+
+        function updateUIForState() {
+            const withdrawBtn = document.getElementById("btnWithdraw");
+            const transferBtn = document.getElementById("btnTransfer");
+
+            if (status === "Suspended") {
+                withdrawBtn.disabled = true;
+                transferBtn.disabled = true;
+            } else if (status === "Closed") {
+                withdrawBtn.disabled = true;
+                transferBtn.disabled = true;
+                document.getElementById("btnDeposit").disabled = true;
+            }
+        }
+        updateUIForState();
+    </script>
+</body>
+</html>
